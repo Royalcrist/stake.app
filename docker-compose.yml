@@ -1,0 +1,54 @@
+version: '3.8'
+volumes:
+  ganache:
+  blockscout-db:
+
+services:
+  ganache:
+    image: trufflesuite/ganache:latest
+    volumes:
+      - ganache:/app/chaindb
+    ports:
+      - '8545:8545'
+    command: --db ./chaindb -p 8545 -i 1337 -b 10 -e 100 -m "salt keen excess wood illness canoe update calm update spot bean tissue"
+    environment:
+      - DOCKER=true
+
+  blockscout-db:
+    image: postgres:13.6
+    restart: always
+    command: postgres -c 'max_connections=10000'
+    environment:
+      POSTGRES_PASSWORD: ''
+      POSTGRES_USER: 'postgres'
+      POSTGRES_HOST_AUTH_METHOD: 'trust'
+    volumes:
+      - blockscout-db:/var/lib/postgresql
+
+  blockscout:
+    depends_on:
+      - blockscout-db
+    image: blockscout/blockscout:latest
+    restart: always
+    command: 'mix do ecto.create, ecto.migrate, phx.server'
+    env_file:
+      - ./blockscout.env
+    environment:
+      ETHEREUM_JSONRPC_VARIANT: 'ganache'
+      ETHEREUM_JSONRPC_HTTP_URL: http://host.docker.internal:8545/
+      ETHEREUM_JSONRPC_WS_URL: ws://host.docker.internal:8545/
+      INDEXER_DISABLE_PENDING_TRANSACTIONS_FETCHER: 'true'
+      DATABASE_URL: postgresql://postgres:@blockscout-db:5432/blockscout?ssl=false
+      ECTO_USE_SSL: 'false'
+      SUBNETWORK: 'ganache'
+    ports:
+      - '7100:4000'
+
+  frontend:
+    build:
+      context: ./app
+    command: npm run start
+    ports:
+      - '3000:3000'
+    depends_on:
+      - blockscout
