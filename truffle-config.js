@@ -1,19 +1,19 @@
 module.exports = {
-    contracts_build_directory: "./app/src/contracts/",
+	contracts_build_directory: './build/contracts',
 
-    networks: {
-        development: {
-            host: "127.0.0.1",
-            port: 8545,
-            network_id: "*"
-        }
-    },
+	networks: {
+		development: {
+			host: 'ganache',
+			port: 8545,
+			network_id: '*',
+		},
+	},
 
-    mocha: {},
+	mocha: {},
 
-    compilers: {
-        solc: {
-            version: "0.8.14"
-        }
-    }
+	compilers: {
+		solc: {
+			version: '0.8.14',
+		},
+	},
 };

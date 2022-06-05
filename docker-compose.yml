@@ -2,6 +2,7 @@ version: '3.8'
 volumes:
   ganache:
   blockscout-db:
+  contracts:
 
 services:
   ganache:
@@ -47,8 +48,31 @@ services:
   frontend:
     build:
       context: ./app
+      dockerfile: ./Dockerfile
+    restart: always
     command: npm run start
+    volumes:
+      - ./app:/frontend
+      - /frontend/node_modules
     ports:
       - '3000:3000'
     depends_on:
-      - blockscout
+      - ganache
+      - truffle
+
+  truffle:
+    build: .
+    command:
+      [
+        './wait-for-it.sh',
+        'ganache:8545',
+        '-t',
+        '300',
+        '--',
+        'truffle',
+        'migrate',
+      ]
+    volumes:
+      - ./app/src/contracts:/truffle/build/contracts
+    depends_on:
+      - ganache
