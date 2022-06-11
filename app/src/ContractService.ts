@@ -1,43 +1,67 @@
-import {Result} from "@ethersproject/abi";
-import {FakeNft} from "./contracts";
+import { Result } from '@ethersproject/abi';
+import { FakeNft } from './contracts';
+import FakeNftAbi from './contracts/FakeNft.json';
+import FakeCoinAbi from './contracts/FakeCoin.json';
+import FakeStakeAbi from './contracts/FakeStake.json';
 
-// todo: replace with actual contract addresses
-export const FAKE_NFT_CONTRACT_ADDRESS = "0x11220b970933b03EB1e9F05C4dCF31c31cde7D53"
-export const FAKE_COIN_CONTRACT_ADDRESS = "0x8565faFf1ACCEb4986eD64910C7C57Bf2Ef95D5a"
-export const FAKE_STAKE_CONTRACT_ADDRESS = "0xe02eAcf0093Ea63Aa729D356652ec2930a0aE690"
+type Network = { [key: string]: any };
 
-export class ContractService {
-    async listTokensOfOwner(contract: FakeNft, account: string): Promise<string[]> {
-        const sentLogs = await contract.queryFilter(
-            contract.filters.Transfer(account, null),
-        );
+const getContractAddress = (
+	contract: 'FakeNft' | 'FakeCoin' | 'FakeStake',
+	networkId: number | string,
+): string => {
+	const contractsAbi = {
+		FakeNft: FakeNftAbi,
+		FakeCoin: FakeCoinAbi,
+		FakeStake: FakeStakeAbi,
+	};
 
-        const receivedLogs = await contract.queryFilter(
-            contract.filters.Transfer(null, account),
-        );
+	const network = contractsAbi[contract].networks as Network;
 
-        const logs = sentLogs.concat(receivedLogs)
-            .sort((a, b) =>
-                a.blockNumber - b.blockNumber ||
-                a.transactionIndex - b.transactionIndex,
-            );
+	if (!network.hasOwnProperty(networkId)) {
+		throw new Error(`Network ${networkId} not found`);
+	}
 
-        const owned = new Set<string>();
+	return network[networkId].address;
+};
 
-        for (const log of logs) {
-            const {from, to, tokenId} = log.args as Result;
+const listTokensOfOwner = async (
+	contract: FakeNft,
+	account: string,
+): Promise<string[]> => {
+	const sentLogs = await contract.queryFilter(
+		contract.filters.Transfer(account, null),
+	);
 
-            if (this.addressEqual(to, account)) {
-                owned.add(tokenId.toString());
-            } else if (this.addressEqual(from, account)) {
-                owned.delete(tokenId.toString());
-            }
-        }
+	const receivedLogs = await contract.queryFilter(
+		contract.filters.Transfer(null, account),
+	);
 
-        return Array.from(owned.values())
-    };
+	const logs = sentLogs
+		.concat(receivedLogs)
+		.sort(
+			(a, b) =>
+				a.blockNumber - b.blockNumber ||
+				a.transactionIndex - b.transactionIndex,
+		);
 
-    addressEqual(a: string, b: string) {
-        return a.toLowerCase() === b.toLowerCase();
-    }
-}
+	const owned = new Set<string>();
+
+	for (const log of logs) {
+		const { from, to, tokenId } = log.args as Result;
+
+		if (addressEqual(to, account)) {
+			owned.add(tokenId.toString());
+		} else if (addressEqual(from, account)) {
+			owned.delete(tokenId.toString());
+		}
+	}
+
+	return Array.from(owned.values());
+};
+
+const addressEqual = (a: string, b: string) => {
+	return a.toLowerCase() === b.toLowerCase();
+};
+
+export { getContractAddress, listTokensOfOwner };

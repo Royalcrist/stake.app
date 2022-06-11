@@ -1,8 +1,8 @@
 import { useAccount, useProvider, useSigner } from 'wagmi';
 
-import { ContractService, FAKE_NFT_CONTRACT_ADDRESS } from './ContractService';
+import { listTokensOfOwner, getContractAddress } from './ContractService';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FakeNft__factory } from './contracts';
 
 export function Example() {
@@ -10,34 +10,33 @@ export function Example() {
 	const { data: signer } = useSigner();
 
 	const provider = useProvider();
-
-	const contractService = useMemo(() => {
-		return new ContractService();
-	}, []);
-
+	const networkId = provider.network.chainId;
+	const contractAddress = getContractAddress('FakeNft', networkId);
 	const [tokens, setTokens] = useState<string[]>([]);
 
-	useEffect(() => {
-		(async () => {
-			if (account && account.address) {
-				let tokens = await contractService.listTokensOfOwner(
-					FakeNft__factory.connect(FAKE_NFT_CONTRACT_ADDRESS, provider),
-					account.address,
-				);
+	const fetchTokens = useCallback(async () => {
+		if (!account?.address) return;
 
-				setTokens(tokens);
-			}
-		})();
-	}, [provider, account, contractService]);
+		let tokens = await listTokensOfOwner(
+			FakeNft__factory.connect(contractAddress, provider),
+			account.address,
+		);
+
+		setTokens(tokens);
+	}, [account, contractAddress, provider]);
+
+	useEffect(() => {
+		fetchTokens();
+	}, [fetchTokens]);
 
 	const mint = async () => {
-		if (account && account.address && signer) {
-			let contract = FakeNft__factory.connect(
-				FAKE_NFT_CONTRACT_ADDRESS,
-				signer,
-			);
-			await contract.mint(account.address);
-		}
+		if (!account?.address || !signer) return;
+
+		console.log(contractAddress);
+
+		let contract = FakeNft__factory.connect(contractAddress, signer);
+
+		await contract.mint(account.address);
 	};
 
 	return (
@@ -47,7 +46,7 @@ export function Example() {
 					<button onClick={mint}>Mint NFT</button>
 					<div>
 						{tokens.map(t => {
-							return <p>{t}</p>;
+							return <p>Token: {t}</p>;
 						})}
 					</div>
 				</div>
