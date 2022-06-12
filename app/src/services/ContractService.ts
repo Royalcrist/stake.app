@@ -1,8 +1,8 @@
 import { Result } from '@ethersproject/abi';
-import { FakeNft } from './contracts';
-import FakeNftAbi from './contracts/FakeNft.json';
-import FakeCoinAbi from './contracts/FakeCoin.json';
-import FakeStakeAbi from './contracts/FakeStake.json';
+import { FakeNft } from '../contracts';
+import FakeNftAbi from '../contracts/FakeNft.json';
+import FakeCoinAbi from '../contracts/FakeCoin.json';
+import FakeStakeAbi from '../contracts/FakeStake.json';
 
 type Network = { [key: string]: any };
 

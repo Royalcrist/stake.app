@@ -2,10 +2,10 @@ FROM node:17.9
 
 WORKDIR /frontend
 
-COPY ./package.json /frontend
+COPY ./package.json /frontend/
 
-RUN npm install
+RUN yarn install
 
 COPY . .
 
-CMD [ "npm", "run", "start" ]
+CMD [ "yarn", "dev" ]

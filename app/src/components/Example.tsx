@@ -1,11 +1,12 @@
-import { useAccount, useProvider, useSigner } from 'wagmi';
-
-import { listTokensOfOwner, getContractAddress } from './ContractService';
-
 import { useCallback, useEffect, useState } from 'react';
-import { FakeNft__factory } from './contracts';
+import { useAccount, useProvider, useSigner } from 'wagmi';
+import {
+	listTokensOfOwner,
+	getContractAddress,
+} from '../services/ContractService';
+import { FakeNft__factory } from '../contracts';
 
-export function Example() {
+const Example = () => {
 	const { data: account } = useAccount();
 	const { data: signer } = useSigner();
 
@@ -32,8 +33,6 @@ export function Example() {
 	const mint = async () => {
 		if (!account?.address || !signer) return;
 
-		console.log(contractAddress);
-
 		let contract = FakeNft__factory.connect(contractAddress, signer);
 
 		await contract.mint(account.address);
@@ -46,7 +45,7 @@ export function Example() {
 					<button onClick={mint}>Mint NFT</button>
 					<div>
 						{tokens.map(t => {
-							return <p>Token: {t}</p>;
+							return <p key={t}>Token: {t}</p>;
 						})}
 					</div>
 				</div>
@@ -55,4 +54,6 @@ export function Example() {
 			)}
 		</div>
 	);
-}
+};
+
+export default Example;
