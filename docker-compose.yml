@@ -50,9 +50,9 @@ services:
       context: ./app
       dockerfile: ./Dockerfile
     restart: always
-    command: npm run start
     volumes:
       - ./app:/frontend
+      - /frontend/node_modules
     ports:
       - '3000:3000'
     depends_on:

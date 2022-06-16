@@ -28,7 +28,7 @@ const getContractAddress = (
 const listTokensOfOwner = async (
 	contract: FakeNft,
 	account: string,
-): Promise<string[]> => {
+): Promise<number[]> => {
 	const sentLogs = await contract.queryFilter(
 		contract.filters.Transfer(account, null),
 	);
@@ -45,7 +45,7 @@ const listTokensOfOwner = async (
 				a.transactionIndex - b.transactionIndex,
 		);
 
-	const owned = new Set<string>();
+	const owned = new Set<number>();
 
 	for (const log of logs) {
 		const { from, to, tokenId } = log.args as Result;

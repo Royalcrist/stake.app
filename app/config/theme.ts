@@ -104,10 +104,10 @@ const Heading: ComponentStyleConfig = {
 
 // Variants and sizes override global values, this is a limitiation of Chakra buttons :|
 // I preffer use this instead of !important for global styling
-const buttonSizes = ['xs', 'sm', 'md', 'lg'].reduce(
+const buttonSizes = ['sm', 'md', 'lg'].reduce(
 	(sizes: { [key: string]: any }, size) => {
 		sizes[size] = {
-			padding: '2rem 4rem',
+			padding: '2em 3em',
 		};
 		return sizes;
 	},
@@ -120,7 +120,12 @@ const Button: ComponentStyleConfig = {
 		color: 'font.900',
 		borderRadius: '2xl',
 	},
-	sizes: buttonSizes,
+	sizes: {
+		...buttonSizes,
+		xs: {
+			padding: '2em 2.5em',
+		},
+	},
 	variants: {
 		solid: {
 			bg: 'primary.900',
@@ -161,6 +166,7 @@ const Button: ComponentStyleConfig = {
 	},
 	defaultProps: {
 		variant: 'solid',
+		size: 'sm',
 	},
 };
 
@@ -178,6 +184,14 @@ const Modal: ComponentStyleConfig = {
 	},
 };
 
+const Drawer: ComponentStyleConfig = {
+	parts: ['dialog', 'body', 'panels'],
+	baseStyle: {
+		dialog: {
+			bg: 'backgrounds.primary.900',
+		},
+	},
+};
 const Spinner: ComponentStyleConfig = {
 	baseStyle: {
 		color: 'font.900',
@@ -188,7 +202,7 @@ const theme = extendTheme({
 	styles,
 	fonts,
 	colors,
-	components: { Heading, Button, Modal },
+	components: { Button, Drawer, Heading, Modal, Spinner },
 });
 
 export default theme;

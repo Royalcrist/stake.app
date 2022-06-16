@@ -4,12 +4,13 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./FakeCoin.sol";
 import "./FakeNft.sol";
 
-contract FakeStake is Ownable, ReentrancyGuard {
+contract FakeStake is Ownable, ReentrancyGuard, ERC721Holder {
     FakeCoin public immutable rewardsToken;
     FakeNft public immutable nftCollection;
 
@@ -71,7 +72,11 @@ contract FakeStake is Ownable, ReentrancyGuard {
 
             stakerAddress[_tokenIds[i]] = address(0);
 
-            nftCollection.transferFrom(address(this), msg.sender, _tokenIds[i]);
+            nftCollection.safeTransferFrom(
+                address(this),
+                msg.sender,
+                _tokenIds[i]
+            );
         }
 
         stakers[msg.sender].amountStaked -= len;
@@ -79,7 +84,8 @@ contract FakeStake is Ownable, ReentrancyGuard {
     }
 
     function claim() external {
-        uint256 rewards = calculateRewards(msg.sender) + stakers[msg.sender].unclaimedRewards;
+        uint256 rewards = calculateRewards(msg.sender) +
+            stakers[msg.sender].unclaimedRewards;
 
         require(rewards > 0, "You have no rewards to claim");
 
@@ -90,29 +96,30 @@ contract FakeStake is Ownable, ReentrancyGuard {
     }
 
     function info(address _user)
-    public
-    view
-    returns (uint256 _tokensStaked, uint256 _availableRewards)
+        public
+        view
+        returns (uint256 _tokensStaked, uint256 _availableRewards)
     {
         return (stakers[_user].amountStaked, availableRewards(_user));
     }
 
-    function availableRewards(address _user)
-    internal
-    view
-    returns (uint256) {
+    function availableRewards(address _user) internal view returns (uint256) {
         require(stakers[_user].amountStaked > 0, "User has no tokens staked");
 
         return stakers[_user].unclaimedRewards + calculateRewards(_user);
     }
 
     function calculateRewards(address _staker)
-    internal
-    view
-    returns (uint256 _rewards)
+        internal
+        view
+        returns (uint256 _rewards)
     {
-        uint256 secondsElapsed = block.timestamp - stakers[_staker].timeOfLastUpdate;
+        uint256 secondsElapsed = block.timestamp -
+            stakers[_staker].timeOfLastUpdate;
 
-        return secondsElapsed * stakers[msg.sender].amountStaked * rewardsPerSecond;
+        return
+            secondsElapsed *
+            stakers[msg.sender].amountStaked *
+            rewardsPerSecond;
     }
 }

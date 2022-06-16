@@ -8,6 +8,8 @@ RUN npm install
 
 RUN npm install -g truffle
 
+COPY ./contracts .
+
 COPY . .
 
 
