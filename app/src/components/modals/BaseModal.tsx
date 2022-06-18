@@ -34,7 +34,12 @@ const BaseModal = ({
 	return (
 		<Modal isOpen={Boolean(isOpen)} onClose={onClose} isCentered {...props}>
 			<ModalOverlay />
-			<ModalContent maxW="80%">
+			<ModalContent
+				maxW={{
+					base: '80%',
+					sm: '40rem',
+				}}
+			>
 				<ModalHeader>{title}</ModalHeader>
 				{!isLoading && (
 					<>

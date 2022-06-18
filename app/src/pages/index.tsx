@@ -63,21 +63,36 @@ const Home: NextPage = () => {
 				height="100vh"
 				templateAreas={{
 					base: '"bg" "info"',
+					lg: '"info bg"',
 				}}
 				templateColumns={{
 					base: '1fr',
+					lg: '1fr 2fr',
 				}}
 				templateRows={{
 					base: '2fr 1fr',
+					lg: 'auto 1fr',
 				}}
 			>
-				<Image
-					height="100%"
-					objectFit="cover"
-					src="/backgrounds/home.png"
-					alt="Home background"
-				/>
-				<GridItem padding={4}>
+				<GridItem area="bg" justifySelf="center" alignSelf="center">
+					<Image
+						height="100%"
+						maxHeight="100vh"
+						objectFit="cover"
+						src="/backgrounds/home.png"
+						alt="Home background"
+					/>
+				</GridItem>
+				<GridItem
+					area="info"
+					paddingTop={12}
+					paddingX={4}
+					paddingBottom={16}
+					alignSelf={{
+						base: 'end',
+						lg: 'center',
+					}}
+				>
 					<Heading as="h1" size="2xl">
 						Fake NFT
 					</Heading>

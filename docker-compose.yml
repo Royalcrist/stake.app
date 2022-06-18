@@ -72,6 +72,6 @@ services:
         'migrate',
       ]
     volumes:
-      - ./app/src/contracts:/truffle/build/contracts
+      - ./app/src/contracts:/truffle/app/src/contracts
     depends_on:
       - ganache
