@@ -1,8 +1,10 @@
+import { useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { FakeStake } from '../contracts';
 
 const useWithdraw = (contract?: FakeStake) => {
 	const [isWithdrawing, setIsWithdrawing] = useState(false);
+	const toast = useToast();
 
 	const withdraw = async (stakedTokens: number[]) => {
 		try {
@@ -14,9 +16,30 @@ const useWithdraw = (contract?: FakeStake) => {
 
 			setIsWithdrawing(false);
 
-			// TODO: use a toast to show the user that the withdraw was successful
+			toast({
+				title: 'Withdraw in processing',
+				description: 'Your withdraw is in progress. Please wait.',
+				status: 'info',
+				duration: 9000,
+				isClosable: true,
+			});
+
+			// TODO: Add event listener to check if withdraw is done.
 		} catch (error) {
-			// TODO handle the error
+			const parsedError = error as any;
+			const message =
+				parsedError?.data?.data?.reason ||
+				'Something went wrong. Please try again.';
+
+			toast({
+				title: 'Withdraw failed',
+				description: message,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+
+			setIsWithdrawing(false);
 		}
 	};
 

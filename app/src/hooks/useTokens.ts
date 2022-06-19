@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/react';
 import { GetAccountResult } from '@wagmi/core';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,6 +11,7 @@ const useTokens = (
 ) => {
 	const [isLoading, setIsLoading] = useState(true);
 	const [tokens, setTokens] = useState<number[]>([]);
+	const toast = useToast();
 
 	const fetchTokens = useCallback(async () => {
 		try {
@@ -20,11 +22,23 @@ const useTokens = (
 			setTokens(tokens);
 			setIsLoading(false);
 		} catch (error) {
-			// TODO: Handle error
+			const parsedError = error as any;
+			const message =
+				parsedError?.data?.data?.reason ||
+				'Something went wrong. Please try again.';
+
+			toast({
+				title: 'Failed to get your NFTs',
+				description: message,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+
 			setTokens([]);
 			setIsLoading(false);
 		}
-	}, [account, contract]);
+	}, [account, contract, toast]);
 
 	useEffect(() => {
 		fetchTokens();

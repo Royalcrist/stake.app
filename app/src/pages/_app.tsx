@@ -10,6 +10,12 @@ import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import { ChakraProvider } from '@chakra-ui/react';
 import theme from '../../config/theme';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import duration from 'dayjs/plugin/duration';
+
+dayjs.extend(relativeTime);
+dayjs.extend(duration);
 
 function MyApp({ Component, pageProps }: AppProps) {
 	const { chains, provider, webSocketProvider } = configureChains(

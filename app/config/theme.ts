@@ -198,11 +198,26 @@ const Spinner: ComponentStyleConfig = {
 	},
 };
 
+const Progress: ComponentStyleConfig = {
+	baseStyle: {
+		track: {
+			bg: 'font.50',
+			width: '100%',
+			borderRadius: 500,
+		},
+		filledTrack: {
+			bg: 'secondary.900',
+			transition: 'max-width ease-in-out',
+			maxWidth: '100%',
+		},
+	},
+};
+
 const theme = extendTheme({
 	styles,
 	fonts,
 	colors,
-	components: { Button, Drawer, Heading, Modal, Spinner },
+	components: { Button, Drawer, Heading, Modal, Spinner, Progress },
 });
 
 export default theme;

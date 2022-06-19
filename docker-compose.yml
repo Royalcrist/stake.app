@@ -45,6 +45,7 @@ services:
     ports:
       - '7100:4000'
 
+  # TODO: wait until contracts are deployed
   frontend:
     build:
       context: ./app

@@ -14,9 +14,9 @@ import {
 import LoginModal from '../components/modals/LoginModal';
 import { useConnect } from 'wagmi';
 
-const Home: NextPage = () => {
+const Home = () => {
 	const onConnect = () => {
-		// This library doesn't work correctly with Next.js.
+		// This library doesn't work correctly with Next.js router.
 		// Connectors are not loaded with useRouter.
 		window.location.replace('/stake');
 	};
@@ -71,7 +71,7 @@ const Home: NextPage = () => {
 				}}
 				templateRows={{
 					base: '2fr 1fr',
-					lg: 'auto 1fr',
+					lg: '1fr',
 				}}
 			>
 				<GridItem area="bg" justifySelf="center" alignSelf="center">

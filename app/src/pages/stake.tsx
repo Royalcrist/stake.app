@@ -1,13 +1,13 @@
-import TokensList from '../components/layouts/TokensList';
-import TokenItem from './../components/listItems/TokenItem';
-import StakeStats from '../components/layouts/StakeStats';
+import TokensList from '../components/data_display/TokensList';
+import TokenItem from '../components/data_display_items/TokenItem';
+import StakeStats from '../components/sections/StakeStats';
 import LoadingContent from '../components/layouts/LoadingContent';
-import ImageSection from '../components/layouts/ImageSection';
+import ImageSection from '../components/sections/ImageSection';
 import { useRouter } from 'next/router';
 import { useAccount, useContractEvent, useProvider, useSigner } from 'wagmi';
 import Navbar from '../components/layouts/Navbar';
 import { getContractAddress } from '../services/ContractService';
-import { FakeNft__factory } from '../contracts';
+import { FakeCoin__factory, FakeNft__factory } from '../contracts';
 import { Box, Grid, GridItem, useToast } from '@chakra-ui/react';
 import useTokens from '../hooks/useTokens';
 import useContracts from '../hooks/useContracts';
@@ -15,14 +15,15 @@ import useMint from '../hooks/useMint';
 import useStake from '../hooks/useStake';
 import useClaim from '../hooks/useClaim';
 import useWithdraw from '../hooks/useWithdraw';
+import useIntervalProgress from '../hooks/useIntervalProgress';
+import useContractNotifications from '../hooks/useContractNotifications';
 
 const StakePage = () => {
 	const { data: account } = useAccount();
 	const { data: signer } = useSigner();
-	const router = useRouter();
+
 	const provider = useProvider();
 	const networkId = provider.network.chainId;
-
 	const fakeNftAddress = getContractAddress('FakeNft', networkId);
 	const fakeStakeAddress = getContractAddress('FakeStake', networkId);
 	const fakeCoinAddress = getContractAddress('FakeCoin', networkId);
@@ -43,8 +44,20 @@ const StakePage = () => {
 
 	const { mint, isMinting } = useMint(account, fakeNftContract);
 
-	const { currentStakingToken, stake, getStakeInfo, reward, stakedTokens } =
-		useStake(account, fakeStakeContract, fakeNftContract);
+	const updateIntervalMs = 1000 * 15; // 15 seconds
+	const {
+		currentStakingToken,
+		stake,
+		getStakeInfo,
+		reward,
+		stakedTokens,
+		lastUpdate,
+	} = useStake({
+		account,
+		fakeStakeContract,
+		fakeNftContract,
+		updateIntervalMs,
+	});
 
 	const { claim, isClaiming } = useClaim(fakeStakeContract);
 
@@ -52,33 +65,40 @@ const StakePage = () => {
 
 	const handleWithdraw = () => withdraw(stakedTokens);
 
+	const router = useRouter();
 	const handleDisconnect = () => {
 		account?.connector?.disconnect();
 		router.push('/');
 	};
 
-	// TODO: create the useEvent hook
 	const toast = useToast();
-	const onMintingComplete = async () => {
+
+	const onTransfer = async () => {
 		await fetchTokens();
 		await getStakeInfo();
 		toast({
-			title: 'Minting complete',
-			description: 'Your token has been minted',
+			title: 'Transaction complete',
+			description: 'The operation was successful',
 			status: 'success',
 			duration: 5000,
 			isClosable: true,
 		});
 	};
 
-	useContractEvent(
-		{
-			addressOrName: fakeNftAddress,
-			contractInterface: FakeNft__factory.abi,
+	useContractNotifications({
+		fakeCoin: {
+			address: fakeCoinAddress,
+			abi: FakeCoin__factory.abi,
+			onTransfer,
 		},
-		'Transfer',
-		onMintingComplete,
-	);
+		fakeNft: {
+			address: fakeNftAddress,
+			abi: FakeNft__factory.abi,
+			onTransfer,
+		},
+	});
+
+	const { elapsedTime } = useIntervalProgress(updateIntervalMs, lastUpdate);
 
 	return (
 		account && (
@@ -131,6 +151,9 @@ const StakePage = () => {
 											isClaiming={isClaiming}
 											onWithdraw={handleWithdraw}
 											isWithdrawing={isWithdrawing}
+											lastUpdated={lastUpdate}
+											elapsedTime={elapsedTime}
+											updateIntervalMs={updateIntervalMs}
 										/>
 									) : (
 										<ImageSection
@@ -138,7 +161,6 @@ const StakePage = () => {
 											description="What are you waiting for?"
 											image="/backgrounds/profile/zero-staked.png"
 											imageAlt="Zero staked image"
-											buttonText="Let's stake!"
 										/>
 									)}
 								</GridItem>

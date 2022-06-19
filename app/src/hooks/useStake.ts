@@ -1,47 +1,47 @@
+import { useToast } from '@chakra-ui/react';
 import { GetAccountResult } from '@wagmi/core';
+import Big from 'big.js';
+import dayjs, { Dayjs } from 'dayjs';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
 import { FakeNft, FakeStake } from '../contracts';
 import { listStakedTokensOfOwner } from '../services/ContractService';
 
-const useStake = (
-	account?: GetAccountResult<ethers.providers.BaseProvider>,
-	fakeStakeContract?: FakeStake,
-	fakeNftContract?: FakeNft,
-) => {
+interface UseStakeProps {
+	account?: GetAccountResult<ethers.providers.BaseProvider>;
+	fakeStakeContract?: FakeStake;
+	fakeNftContract?: FakeNft;
+	updateIntervalMs: number;
+}
+
+const useStake = ({
+	account,
+	fakeStakeContract,
+	fakeNftContract,
+	updateIntervalMs,
+}: UseStakeProps) => {
 	const [stakedTokens, setStakedTokens] = useState<number[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [currentStakingToken, setCurrentStakingToken] = useState<
 		number | undefined
 	>();
 	const [reward, setReward] = useState<string>('0');
-
-	const fetchStakedTokens = useCallback(async () => {
-		try {
-			if (!account?.address || !fakeNftContract || !fakeStakeContract) return;
-
-			const tokens = await listStakedTokensOfOwner(
-				fakeNftContract,
-				fakeStakeContract,
-				account.address,
-			);
-
-			setStakedTokens(tokens);
-			setIsLoading(false);
-		} catch (error) {
-			// Handle error
-		}
-	}, [account, fakeNftContract, fakeStakeContract]);
-
-	useEffect(() => {
-		fetchStakedTokens();
-	}, [fetchStakedTokens]);
+	const [lastUpdate, setLastUpdate] = useState<Dayjs>();
+	const toast = useToast();
 
 	const stake = (tokenId: number) => async () => {
 		try {
 			if (!account?.address || !fakeStakeContract || !fakeNftContract) return;
 
 			setCurrentStakingToken(tokenId);
+
+			toast({
+				title: 'Please, dont close this window',
+				description: 'We are approving your token to be staked',
+				status: 'info',
+				duration: 5000,
+				isClosable: true,
+			});
 
 			await (
 				await fakeNftContract.approve(fakeStakeContract.address, tokenId)
@@ -52,35 +52,77 @@ const useStake = (
 			});
 
 			setCurrentStakingToken(undefined);
+
+			toast({
+				title: 'Your token is processed',
+				description: 'Once approved, it will be staked',
+				status: 'info',
+				duration: 5000,
+				isClosable: true,
+			});
 		} catch (error: any) {
-			// TODO: Handle error
+			const parsedError = error as any;
+			const message =
+				parsedError?.data?.data?.reason ||
+				'Something went wrong. Please try again.';
+
+			toast({
+				title: 'Stake failed',
+				description: message,
+				status: 'error',
+				duration: 5000,
+				isClosable: true,
+			});
+
 			setCurrentStakingToken(undefined);
 		}
 	};
 
 	const getStakeInfo = useCallback(async () => {
 		try {
-			if (!account?.address || !fakeStakeContract) return;
+			if (!account?.address || !fakeNftContract || !fakeStakeContract) return;
+
+			const tokens = await listStakedTokensOfOwner(
+				fakeNftContract,
+				fakeStakeContract,
+				account.address,
+			);
+			setStakedTokens(tokens);
 
 			const info = await fakeStakeContract.info(account.address);
-
-			const reward = ethers.utils.formatEther(info._availableRewards);
+			const reward = Big(
+				ethers.utils.formatEther(info._availableRewards),
+			).toFixed();
 			setReward(reward);
+
+			setIsLoading(false);
 		} catch (error) {
-			// TODO: Handle error
+			const parsedError = error as any;
+			const message =
+				parsedError?.data?.data?.reason ||
+				'Something went wrong. Please try again.';
+
+			// Making logs because the alert is annoying.
+			console.log(message);
 		}
-	}, [account, fakeStakeContract]);
+	}, [account, fakeNftContract, fakeStakeContract]);
+
+	const updateStakeInfo = useCallback(async () => {
+		getStakeInfo();
+		setLastUpdate(dayjs());
+	}, [getStakeInfo]);
 
 	useEffect(() => {
-		getStakeInfo();
+		updateStakeInfo();
+
 		const infoInterval = setInterval(() => {
-			getStakeInfo();
-		}, 60 * 1000); // every minute
+			updateStakeInfo();
+		}, updateIntervalMs); // every minute
 
 		return () => {
 			clearInterval(infoInterval);
 		};
-	}, [getStakeInfo]);
+	}, [updateIntervalMs, updateStakeInfo]);
 
 	return {
 		currentStakingToken,
@@ -89,6 +131,7 @@ const useStake = (
 		getStakeInfo,
 		stakedTokens,
 		isLoading,
+		lastUpdate,
 	};
 };
 export default useStake;
