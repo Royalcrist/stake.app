@@ -24,7 +24,7 @@ This project depends on these 2 pieces of software. Please make sure you have th
 
 To have a project set up and ready for development, please follow these steps:
 
-1. First bring up some infrastructure components (ganache and blockscout) using docker-compose
+1. First bring up some infrastructure components (ganache, truffle, nextjs, and blockscout) using docker-compose
 
 ```
 docker-compose up -d
