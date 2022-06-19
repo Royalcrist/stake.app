@@ -17,7 +17,7 @@ const useTokens = (
 		try {
 			if (!account?.address || !contract) return;
 
-			let tokens = await listTokensOfOwner(contract, account.address);
+			const tokens = await listTokensOfOwner(contract, account.address);
 
 			setTokens(tokens);
 			setIsLoading(false);

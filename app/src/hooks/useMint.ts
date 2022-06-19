@@ -22,14 +22,13 @@ const useMint = (
 			setIsMinting(false);
 
 			toast({
-				title: 'Withdraw in processing',
-				description: 'Your withdraw is in progress. Please wait.',
+				title: 'Minting in processing',
+				description:
+					'Your token is minting, it will appear in your list after being approve.',
 				status: 'info',
 				duration: 9000,
 				isClosable: true,
 			});
-
-			// TODO: Add event listener to check if mint is done.
 		} catch (error) {
 			const parsedError = error as any;
 			const message =

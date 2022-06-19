@@ -22,8 +22,6 @@ const useClaim = (contract?: FakeStake) => {
 				duration: 9000,
 				isClosable: true,
 			});
-
-			// TODO: Add event listener to check if claim is done.
 		} catch (error) {
 			const parsedError = error as any;
 			const message =

@@ -1,3 +1,5 @@
+import { Connector } from 'wagmi';
+
 export interface LoginModalProps {
 	title: string;
 	connectors: Connector[];

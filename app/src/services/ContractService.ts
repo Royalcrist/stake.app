@@ -5,7 +5,6 @@ import FakeCoinAbi from '../contracts/FakeCoin.json';
 import FakeStakeAbi from '../contracts/FakeStake.json';
 import { BigNumberish } from 'ethers';
 
-// TODO: move to index.d.ts
 type Network = { [key: string]: any };
 
 interface FilterTransfersParams {

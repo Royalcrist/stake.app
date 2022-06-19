@@ -1,5 +1,7 @@
+import { ReactNode } from 'react';
+
 export interface TokensListProps {
-	children: React.ReactNode[];
+	children: ReactNode[];
 	onMint?: () => void;
 	isMinting?: boolean;
 }

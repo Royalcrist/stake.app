@@ -23,8 +23,6 @@ const useWithdraw = (contract?: FakeStake) => {
 				duration: 9000,
 				isClosable: true,
 			});
-
-			// TODO: Add event listener to check if withdraw is done.
 		} catch (error) {
 			const parsedError = error as any;
 			const message =

@@ -1,3 +1,5 @@
+import { ContractInterface } from 'ethers';
+
 interface Contract {
 	address: string;
 	abi: ContractInterface;
