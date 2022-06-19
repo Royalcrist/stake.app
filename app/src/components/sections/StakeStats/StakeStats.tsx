@@ -1,28 +1,6 @@
-import {
-	Box,
-	Button,
-	Grid,
-	Flex,
-	Image,
-	Text,
-	Progress,
-} from '@chakra-ui/react';
-import dayjs, { Dayjs } from 'dayjs';
-
-interface StakeStatsProps {
-	image: string;
-	stakedTokens: number;
-	reward: string | number;
-	rewardCurrency: string;
-	alt?: string;
-	lastUpdated?: Dayjs;
-	elapsedTime?: Dayjs;
-	isClaiming?: boolean;
-	isWithdrawing?: boolean;
-	onClaim?: () => void;
-	onWithdraw?: () => void;
-	updateIntervalMs?: number;
-}
+import { Box, Button, Grid, Flex, Image, Text } from '@chakra-ui/react';
+import dayjs from 'dayjs';
+import { StakeStatsProps } from './types';
 
 const StakeStats = ({
 	image,

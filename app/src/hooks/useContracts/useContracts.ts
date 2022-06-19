@@ -1,30 +1,10 @@
-import { FetchSignerResult } from '@wagmi/core';
 import { useEffect, useState } from 'react';
 import {
-	FakeCoin,
 	FakeCoin__factory,
-	FakeNft,
 	FakeNft__factory,
-	FakeStake,
 	FakeStake__factory,
-} from '../contracts';
-
-interface ContractsAddresses {
-	fakeNftAddress?: string;
-	fakeStakeAddress?: string;
-	fakeCoinAddress?: string;
-}
-
-interface Contracts {
-	fakeNftContract?: FakeNft;
-	fakeStakeContract?: FakeStake;
-	fakeCoinContract?: FakeCoin;
-}
-
-type UseContractsProps = (
-	addresses: ContractsAddresses,
-	signer?: FetchSignerResult,
-) => Contracts;
+} from '../../contracts';
+import { Contracts, UseContractsProps } from './types';
 
 const useContracts: UseContractsProps = (addresses, signer) => {
 	const [contracts, setContracts] = useState<Contracts>({});

@@ -1,18 +1,5 @@
-import { ContractInterface } from 'ethers';
 import { useContractEvent } from 'wagmi';
-
-interface Contract {
-	address: string;
-	abi: ContractInterface;
-	onTransfer: () => void;
-}
-
-interface ContractListeners {
-	fakeCoin: Contract;
-	fakeNft: Contract;
-}
-
-type UseContractNotifications = (listeners: ContractListeners) => void;
+import { UseContractNotifications } from './types';
 
 const useContractNotifications: UseContractNotifications = ({
 	fakeCoin,

@@ -1,10 +1,5 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
-
-interface TokensListProps {
-	children: React.ReactNode[];
-	onMint?: () => void;
-	isMinting?: boolean;
-}
+import { TokensListProps } from './types';
 
 const TokensList = ({ children, onMint, isMinting }: TokensListProps) => {
 	return (

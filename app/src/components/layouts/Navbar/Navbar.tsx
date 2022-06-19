@@ -1,10 +1,6 @@
 import { Button, Flex, Icon, Text } from '@chakra-ui/react';
 import { HiLogout, HiUserCircle } from 'react-icons/hi';
-
-interface NavbarProps {
-	accountId: string;
-	onLogout?: () => void;
-}
+import { NavbarProps } from './types';
 
 const Navbar = ({ accountId, onLogout }: NavbarProps) => {
 	const formattedAccountId =

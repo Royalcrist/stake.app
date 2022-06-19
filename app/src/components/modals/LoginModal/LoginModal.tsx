@@ -1,15 +1,6 @@
 import { Box, Button } from '@chakra-ui/react';
-import { Connector } from 'wagmi';
-import BaseModal from './BaseModal';
-
-interface LoginModalProps {
-	title: string;
-	connectors: Connector[];
-	onClick: (connector: Connector) => void;
-	onClose: () => void;
-	isOpen?: boolean;
-	isLoading?: boolean;
-}
+import BaseModal from '../BaseModal';
+import { LoginModalProps } from './types';
 
 const LoginModal = ({
 	title,

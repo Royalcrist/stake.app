@@ -1,10 +1,5 @@
 import { Button, Flex, Heading } from '@chakra-ui/react';
-
-interface TokenItemProps {
-	tokenId: number;
-	isLoading?: boolean;
-	onClick?: () => void;
-}
+import { TokenItemProps } from './types.d';
 
 const TokenItem = ({ tokenId, onClick, isLoading }: TokenItemProps) => {
 	return (

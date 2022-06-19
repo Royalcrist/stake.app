@@ -1,12 +1,5 @@
-import { Button, Flex, Heading, Image, Text } from '@chakra-ui/react';
-
-interface ImageSectionProps {
-	title: string;
-	description: string;
-	image: string;
-	imageAlt?: string;
-	footer?: React.ReactNode;
-}
+import { Flex, Heading, Image, Text } from '@chakra-ui/react';
+import { ImageSectionProps } from './types';
 
 const ImageSection = ({
 	description,

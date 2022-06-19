@@ -1,18 +1,10 @@
 import { useToast } from '@chakra-ui/react';
-import { GetAccountResult } from '@wagmi/core';
 import Big from 'big.js';
 import dayjs, { Dayjs } from 'dayjs';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState } from 'react';
-import { FakeNft, FakeStake } from '../contracts';
-import { listStakedTokensOfOwner } from '../services/ContractService';
-
-interface UseStakeProps {
-	account?: GetAccountResult<ethers.providers.BaseProvider>;
-	fakeStakeContract?: FakeStake;
-	fakeNftContract?: FakeNft;
-	updateIntervalMs: number;
-}
+import { listStakedTokensOfOwner } from '../../services/ContractService';
+import { UseStakeProps } from './types';
 
 const useStake = ({
 	account,

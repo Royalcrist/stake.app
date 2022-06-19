@@ -9,17 +9,7 @@ import {
 	ModalOverlay,
 	Spinner,
 } from '@chakra-ui/react';
-import { ReactNode } from 'react';
-
-interface BaseModalProps {
-	title: string;
-	onClose: () => void;
-	body?: ReactNode;
-	description?: string;
-	footer?: ReactNode;
-	isOpen?: boolean;
-	isLoading?: boolean;
-}
+import { BaseModalProps } from './types';
 
 const BaseModal = ({
 	isOpen,

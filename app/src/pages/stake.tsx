@@ -4,7 +4,7 @@ import StakeStats from '../components/sections/StakeStats';
 import LoadingContent from '../components/layouts/LoadingContent';
 import ImageSection from '../components/sections/ImageSection';
 import { useRouter } from 'next/router';
-import { useAccount, useContractEvent, useProvider, useSigner } from 'wagmi';
+import { useAccount, useProvider, useSigner } from 'wagmi';
 import Navbar from '../components/layouts/Navbar';
 import { getContractAddress } from '../services/ContractService';
 import { FakeCoin__factory, FakeNft__factory } from '../contracts';
